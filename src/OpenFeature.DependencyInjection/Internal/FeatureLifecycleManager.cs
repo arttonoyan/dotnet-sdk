@@ -1,10 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics.CodeAnalysis;
 
 namespace OpenFeature.Internal;
 
-[ExcludeFromCodeCoverage]
 internal sealed class FeatureLifecycleManager : IFeatureLifecycleManager
 {
     private readonly Api _featureApi;

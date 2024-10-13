@@ -61,7 +61,7 @@ public partial class OpenFeatureBuilderExtensionsTests
         var builder = new OpenFeatureBuilder(services);
 
         // Act
-        var result = builder.AddProvider(_ => new NotImplementedFeatureProvider());
+        var result = builder.AddProvider(_ => new NoOpFeatureProvider());
 
         // Assert
         result.Should().BeSameAs(builder, "The method should return the same builder instance.");
@@ -77,7 +77,7 @@ public partial class OpenFeatureBuilderExtensionsTests
         // Arrange
         var services = new ServiceCollection();
         var builder = new OpenFeatureBuilder(services);
-        builder.AddProvider(_ => new NotImplementedFeatureProvider());
+        builder.AddProvider(_ => new NoOpFeatureProvider());
 
         var serviceProvider = services.BuildServiceProvider();
 
@@ -86,6 +86,6 @@ public partial class OpenFeatureBuilderExtensionsTests
 
         // Assert
         provider.Should().NotBeNull("The FeatureProvider should be resolvable.");
-        provider.Should().BeOfType<NotImplementedFeatureProvider>("The resolved provider should be of type DefaultFeatureProvider.");
+        provider.Should().BeOfType<NoOpFeatureProvider>("The resolved provider should be of type DefaultFeatureProvider.");
     }
 }

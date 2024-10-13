@@ -2,14 +2,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenFeature.Internal;
 using OpenFeature.Model;
-using System.Diagnostics.CodeAnalysis;
 
 namespace OpenFeature;
 
 /// <summary>
 /// Contains extension methods for the <see cref="IServiceCollection"/> class.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public static class OpenFeatureServiceCollectionExtensions
 {
     /// <summary>

@@ -5,7 +5,7 @@ using Xunit;
 
 namespace OpenFeature.DependencyInjection.Tests;
 
-public class OpenFeatureBuilderExtensionsTests
+public partial class OpenFeatureBuilderExtensionsTests
 {
     [Theory]
     [InlineData(true)]
@@ -51,5 +51,41 @@ public class OpenFeatureBuilderExtensionsTests
         // Assert
         context.Should().NotBeNull("The EvaluationContext should be resolvable.");
         delegateCalled.Should().BeTrue("The delegate should be invoked.");
+    }
+
+    [Fact]
+    public void AddProvider_ShouldAddProviderToCollection()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var builder = new OpenFeatureBuilder(services);
+
+        // Act
+        var result = builder.AddProvider(_ => new NotImplementedFeatureProvider());
+
+        // Assert
+        result.Should().BeSameAs(builder, "The method should return the same builder instance.");
+        services.Should().ContainSingle(serviceDescriptor =>
+            serviceDescriptor.ServiceType == typeof(FeatureProvider) &&
+            serviceDescriptor.Lifetime == ServiceLifetime.Singleton,
+            "A singleton service of type FeatureProvider should be added.");
+    }
+
+    [Fact]
+    public void AddProvider_ShouldResolveCorrectProvider()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var builder = new OpenFeatureBuilder(services);
+        builder.AddProvider(_ => new NotImplementedFeatureProvider());
+
+        var serviceProvider = services.BuildServiceProvider();
+
+        // Act
+        var provider = serviceProvider.GetService<FeatureProvider>();
+
+        // Assert
+        provider.Should().NotBeNull("The FeatureProvider should be resolvable.");
+        provider.Should().BeOfType<NotImplementedFeatureProvider>("The resolved provider should be of type DefaultFeatureProvider.");
     }
 }

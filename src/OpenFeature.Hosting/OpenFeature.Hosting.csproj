@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OpenFeature.DependencyInjection\OpenFeature.DependencyInjection.csproj" />
+  </ItemGroup>
+
 </Project>

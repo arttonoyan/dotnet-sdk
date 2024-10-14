@@ -5,7 +5,7 @@ namespace OpenFeature;
 /// <summary>
 /// Describes a <see cref="OpenFeatureBuilder"/> backed by an <see cref="IServiceCollection"/>.
 /// </summary>
-/// <param name="Services"><see cref="IServiceCollection"/></param>
+/// <param name="Services">The <see cref="IServiceCollection"/> instance.</param>
 public sealed record OpenFeatureBuilder(IServiceCollection Services)
 {
     /// <summary>

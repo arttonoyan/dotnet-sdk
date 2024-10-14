@@ -83,7 +83,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenFeature.DependencyInjec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenFeature.DependencyInjection.Tests", "test\OpenFeature.DependencyInjection.Tests\OpenFeature.DependencyInjection.Tests.csproj", "{EB35F9F6-8A79-410E-A293-9387BC4AC9A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenFeature.Hosting", "src\OpenFeature.Hosting\OpenFeature.Hosting.csproj", "{C99DA02A-3981-45A6-B3F8-4A1A48653DEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenFeature.Hosting", "src\OpenFeature.Hosting\OpenFeature.Hosting.csproj", "{C99DA02A-3981-45A6-B3F8-4A1A48653DEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

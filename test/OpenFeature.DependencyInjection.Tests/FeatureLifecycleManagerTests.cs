@@ -16,9 +16,6 @@ public class FeatureLifecycleManagerTests
         Api.Instance.SetContext(null);
         Api.Instance.ClearHooks();
 
-        //_mockApi = Substitute.ForPartsOf<Api>();
-        //Api.Instance.Returns(_mockApi);
-
         _mockServiceProvider = Substitute.For<IServiceProvider>();
 
         _systemUnderTest = new FeatureLifecycleManager(
@@ -48,10 +45,11 @@ public class FeatureLifecycleManagerTests
         // Arrange
         _mockServiceProvider.GetService(typeof(FeatureProvider)).Returns(null as FeatureProvider);
 
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            await _systemUnderTest.EnsureInitializedAsync().ConfigureAwait(false));
+        // Act
+        var act = () => _systemUnderTest.EnsureInitializedAsync().AsTask();
 
+        // Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(act);
         exception.Message.Should().Be("Feature provider is not registered in the service collection.");
     }
 }

@@ -16,9 +16,6 @@ public class FeatureLifecycleManagerTests
         Api.Instance.SetContext(null);
         Api.Instance.ClearHooks();
 
-        //_mockApi = Substitute.ForPartsOf<Api>();
-        //Api.Instance.Returns(_mockApi);
-
         _mockServiceProvider = Substitute.For<IServiceProvider>();
 
         _systemUnderTest = new FeatureLifecycleManager(

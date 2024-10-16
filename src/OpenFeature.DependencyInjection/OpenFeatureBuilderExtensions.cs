@@ -27,9 +27,7 @@ public static partial class OpenFeatureBuilderExtensions
     /// <summary>
     /// This method is used to add a new context to the service collection.
     /// </summary>
-    /// <param name="builder">The <see cref="OpenFeatureBuilder"/> instance.</param>
     /// <param name="configure">the desired configuration</param>
-    /// <returns>The <see cref="OpenFeatureBuilder"/> instance.</returns>
     public static OpenFeatureBuilder AddContext(
         this OpenFeatureBuilder builder,
         Action<EvaluationContextBuilder, IServiceProvider> configure)
@@ -38,8 +36,6 @@ public static partial class OpenFeatureBuilderExtensions
         ArgumentNullException.ThrowIfNull(configure);
 
         builder.IsContextConfigured = true;
-        builder.Services.TryAddTransient(provider =>
-        {
             var contextBuilder = EvaluationContext.Builder();
             configure(contextBuilder, provider);
             return contextBuilder.Build();

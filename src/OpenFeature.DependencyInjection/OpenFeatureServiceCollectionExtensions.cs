@@ -19,8 +19,8 @@ public static class OpenFeatureServiceCollectionExtensions
     /// <returns>the current <see cref="IServiceCollection"/> instance</returns>
     public static IServiceCollection AddOpenFeature(this IServiceCollection services, Action<OpenFeatureBuilder> configure)
     {
-        ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(configure);
+        Guard.ThrowIfNull(services);
+        Guard.ThrowIfNull(configure);
 
         services.TryAddSingleton(Api.Instance);
         services.TryAddSingleton<IFeatureLifecycleManager, FeatureLifecycleManager>();

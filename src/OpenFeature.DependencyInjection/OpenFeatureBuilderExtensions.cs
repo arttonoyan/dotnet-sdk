@@ -18,8 +18,8 @@ public static partial class OpenFeatureBuilderExtensions
         this OpenFeatureBuilder builder,
         Action<EvaluationContextBuilder> configure)
     {
-        ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(configure);
+        Guard.ThrowIfNull(builder);
+        Guard.ThrowIfNull(configure);
 
         return builder.AddContext((b, _) => configure(b));
     }
@@ -34,8 +34,8 @@ public static partial class OpenFeatureBuilderExtensions
         this OpenFeatureBuilder builder,
         Action<EvaluationContextBuilder, IServiceProvider> configure)
     {
-        ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(configure);
+        Guard.ThrowIfNull(builder);
+        Guard.ThrowIfNull(configure);
 
         builder.IsContextConfigured = true;
         builder.Services.TryAddTransient(provider => {
@@ -57,7 +57,7 @@ public static partial class OpenFeatureBuilderExtensions
     public static OpenFeatureBuilder AddProvider<T>(this OpenFeatureBuilder builder, Func<IServiceProvider, T> providerFactory)
         where T : FeatureProvider
     {
-        ArgumentNullException.ThrowIfNull(builder);
+        Guard.ThrowIfNull(builder);
         builder.Services.TryAddSingleton<FeatureProvider>(providerFactory);
         return builder;
     }

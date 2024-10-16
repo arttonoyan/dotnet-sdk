@@ -5,7 +5,7 @@ using Xunit;
 
 namespace OpenFeature.DependencyInjection.Tests;
 
-public class OpenFeatureBuilderExtensionsTests
+public partial class OpenFeatureBuilderExtensionsTests
 {
     private readonly IServiceCollection _services;
     private readonly OpenFeatureBuilder _systemUnderTest;

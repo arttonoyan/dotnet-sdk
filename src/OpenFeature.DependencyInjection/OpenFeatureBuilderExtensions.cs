@@ -38,7 +38,8 @@ public static partial class OpenFeatureBuilderExtensions
         Guard.ThrowIfNull(configure);
 
         builder.IsContextConfigured = true;
-        builder.Services.TryAddTransient(provider => {
+        builder.Services.TryAddTransient(provider =>
+        {
             var contextBuilder = EvaluationContext.Builder();
             configure(contextBuilder, provider);
             return contextBuilder.Build();

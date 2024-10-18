@@ -5,11 +5,11 @@ using Microsoft.Extensions.Options;
 namespace OpenFeature;
 
 /// <summary>
-/// A hosted service that manages the lifecycle of features within the application. 
-/// It ensures that features are properly initialized when the service starts 
+/// A hosted service that manages the lifecycle of features within the application.
+/// It ensures that features are properly initialized when the service starts
 /// and gracefully shuts down when the service stops.
 /// </summary>
-public sealed class HostedFeatureLifecycleService : IHostedLifecycleService
+public sealed partial class HostedFeatureLifecycleService : IHostedLifecycleService
 {
     private readonly ILogger<HostedFeatureLifecycleService> _logger;
     private readonly IFeatureLifecycleManager _featureLifecycleManager;
@@ -74,7 +74,7 @@ public sealed class HostedFeatureLifecycleService : IHostedLifecycleService
     {
         if (_featureLifecycleStateOptions.Value.StartState == expectedState)
         {
-            _logger.LogInformation("Initializing the Feature Lifecycle Manager for state {State}.", expectedState);
+            this.LogInitializingFeatureLifecycleManager(expectedState);
             await _featureLifecycleManager.EnsureInitializedAsync(cancellationToken).ConfigureAwait(false);
         }
     }
@@ -86,8 +86,14 @@ public sealed class HostedFeatureLifecycleService : IHostedLifecycleService
     {
         if (_featureLifecycleStateOptions.Value.StopState == expectedState)
         {
-            _logger.LogInformation("Shutting down the Feature Lifecycle Manager for state {State}.", expectedState);
+            this.LogShuttingDownFeatureLifecycleManager(expectedState);
             await _featureLifecycleManager.ShutdownAsync(cancellationToken).ConfigureAwait(false);
         }
     }
+
+    [LoggerMessage(200, LogLevel.Information, "Initializing the Feature Lifecycle Manager for state {State}.")]
+    partial void LogInitializingFeatureLifecycleManager(FeatureStartState state);
+
+    [LoggerMessage(200, LogLevel.Information, "Shutting down the Feature Lifecycle Manager for state {State}")]
+    partial void LogShuttingDownFeatureLifecycleManager(FeatureStopState state);
 }

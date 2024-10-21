@@ -30,7 +30,8 @@ public static class OpenFeatureServiceCollectionExtensions
 
         if (builder.IsContextConfigured)
         {
-            services.TryAddScoped<IFeatureClient>(static provider => {
+            services.TryAddScoped<IFeatureClient>(static provider =>
+            {
                 var api = provider.GetRequiredService<Api>();
                 var client = api.GetClient();
                 var context = provider.GetRequiredService<EvaluationContext>();
@@ -40,7 +41,8 @@ public static class OpenFeatureServiceCollectionExtensions
         }
         else
         {
-            services.TryAddScoped<IFeatureClient>(static provider => {
+            services.TryAddScoped<IFeatureClient>(static provider =>
+            {
                 var api = provider.GetRequiredService<Api>();
                 return api.GetClient();
             });

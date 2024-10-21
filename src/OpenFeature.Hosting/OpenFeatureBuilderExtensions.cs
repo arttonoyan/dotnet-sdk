@@ -17,9 +17,10 @@ public static partial class OpenFeatureBuilderExtensions
     /// <returns>The <see cref="OpenFeatureBuilder"/> instance.</returns>
     public static OpenFeatureBuilder AddHostedFeatureLifecycle(this OpenFeatureBuilder builder, Action<FeatureLifecycleStateOptions>? configureOptions = null)
     {
-        if(configureOptions == null)
+        if (configureOptions == null)
         {
-            builder.Services.Configure<FeatureLifecycleStateOptions>(cfg => {
+            builder.Services.Configure<FeatureLifecycleStateOptions>(cfg =>
+            {
                 cfg.StartState = FeatureStartState.Starting;
                 cfg.StopState = FeatureStopState.Stopping;
             });

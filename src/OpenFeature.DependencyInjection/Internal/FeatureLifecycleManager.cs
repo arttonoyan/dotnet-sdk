@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace OpenFeature.Internal;
 
-internal sealed class FeatureLifecycleManager : IFeatureLifecycleManager
+internal sealed partial class FeatureLifecycleManager : IFeatureLifecycleManager
 {
     private readonly Api _featureApi;
     private readonly IServiceProvider _serviceProvider;
@@ -19,7 +19,7 @@ internal sealed class FeatureLifecycleManager : IFeatureLifecycleManager
     /// <inheritdoc />
     public async ValueTask EnsureInitializedAsync(CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Starting initialization of the feature provider");
+        this.LogStartingInitializationOfFeatureProvider();
         var featureProvider = _serviceProvider.GetService<FeatureProvider>();
         if (featureProvider == null)
         {
@@ -31,7 +31,13 @@ internal sealed class FeatureLifecycleManager : IFeatureLifecycleManager
     /// <inheritdoc />
     public async ValueTask ShutdownAsync(CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Shutting down the feature provider.");
+        this.LogShuttingDownFeatureProvider();
         await _featureApi.ShutdownAsync().ConfigureAwait(false);
     }
+
+    [LoggerMessage(200, LogLevel.Information, "Starting initialization of the feature provider")]
+    partial void LogStartingInitializationOfFeatureProvider();
+
+    [LoggerMessage(200, LogLevel.Information, "Shutting down the feature provider")]
+    partial void LogShuttingDownFeatureProvider();
 }

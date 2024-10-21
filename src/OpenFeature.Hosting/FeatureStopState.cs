@@ -1,4 +1,4 @@
-﻿namespace OpenFeature;
+namespace OpenFeature;
 
 /// <summary>
 /// Defines the various states for stopping a feature.

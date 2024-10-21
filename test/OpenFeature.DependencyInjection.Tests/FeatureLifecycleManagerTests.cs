@@ -33,7 +33,7 @@ public class FeatureLifecycleManagerTests
             .Returns(featureProvider);
 
         // Act
-        await _systemUnderTest.EnsureInitializedAsync();
+        await _systemUnderTest.EnsureInitializedAsync().ConfigureAwait(true);
 
         // Assert
         Api.Instance.GetProvider().Should().BeSameAs(featureProvider);
@@ -49,7 +49,7 @@ public class FeatureLifecycleManagerTests
         var act = () => _systemUnderTest.EnsureInitializedAsync().AsTask();
 
         // Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(act);
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(act).ConfigureAwait(true);
         exception.Message.Should().Be("Feature provider is not registered in the service collection.");
     }
 }

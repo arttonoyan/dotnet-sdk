@@ -211,6 +211,8 @@ public static partial class OpenFeatureBuilderExtensions
         Guard.ThrowIfNull(builder);
         Guard.ThrowIfNull(configureOptions);
 
+        builder.IsPolicyConfigured = true;
+
         builder.Services.Configure(configureOptions);
         return builder;
     }

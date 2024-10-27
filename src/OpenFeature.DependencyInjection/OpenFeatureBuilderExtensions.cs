@@ -173,4 +173,38 @@ public static partial class OpenFeatureBuilderExtensions
 
         return builder;
     }
+
+    /// <summary>
+    /// Configures a default client for OpenFeature using the provided <see cref="Func{T, TResult}"/>.
+    /// </summary>
+    /// <param name="builder">The <see cref="OpenFeatureBuilder"/> instance.</param>
+    /// <param name="getClient">
+    /// A function to retrieve an <see cref="IFeatureClient"/> based on the service provider and <see cref="PolicyNameOptions"/>.
+    /// </param>
+    /// <returns>The configured <see cref="OpenFeatureBuilder"/> instance.</returns>
+    internal static OpenFeatureBuilder AddDefaultClient(this OpenFeatureBuilder builder, Func<IServiceProvider, PolicyNameOptions, IFeatureClient> getClient)
+    {
+        builder.Services.TryAddScoped(provider =>
+        {
+            var policy = provider.GetRequiredService<IOptions<PolicyNameOptions>>().Value;
+            return getClient(provider, policy);
+        });
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Configures the policy name options for OpenFeature, allowing customization of feature client selection.
+    /// </summary>
+    /// <param name="builder">The <see cref="OpenFeatureBuilder"/> instance.</param>
+    /// <param name="configureOptions">A delegate to configure the <see cref="PolicyNameOptions"/>.</param>
+    /// <returns>The configured <see cref="OpenFeatureBuilder"/> instance.</returns>
+    public static OpenFeatureBuilder AddPolicyName(this OpenFeatureBuilder builder, Action<PolicyNameOptions> configureOptions)
+    {
+        Guard.ThrowIfNull(builder);
+        Guard.ThrowIfNull(configureOptions);
+
+        builder.Services.Configure(configureOptions);
+        return builder;
+    }
 }

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using OpenFeature.DependencyInjection;
 using OpenFeature.DependencyInjection.Internal;
 
@@ -29,14 +28,21 @@ public static partial class OpenFeatureServiceCollectionExtensions
         var builder = new OpenFeatureBuilder(services);
         configure(builder);
 
-        services.TryAddScoped(provider =>
+
+        builder.AddDefaultClient((provider, policy) =>
         {
-            var options = provider.GetRequiredService<IOptions<OpenFeatureOptions>>().Value;
-            if (!options.HasDefaultProvider)
+            if (policy.DefaultNameSelector == null)
             {
-                return provider.GetRequiredKeyedService<IFeatureClient>(options.ProviderNames.First());
+                return provider.GetRequiredService<IFeatureClient>();
             }
-            throw new InvalidOperationException("Default provider is not configured.");
+
+            var name = policy.DefaultNameSelector.Invoke(provider);
+            if (name == null)
+            {
+                return provider.GetRequiredService<IFeatureClient>();
+            }
+
+            return provider.GetRequiredKeyedService<IFeatureClient>(name);
         });
 
         return services;

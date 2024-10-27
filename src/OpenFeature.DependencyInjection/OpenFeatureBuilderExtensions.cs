@@ -59,7 +59,7 @@ public static partial class OpenFeatureBuilderExtensions
     /// <param name="builder">The <see cref="OpenFeatureBuilder"/> instance.</param>
     /// <param name="configureBuilder">The action to configure the provider builder.</param>
     /// <returns>The <see cref="OpenFeatureBuilder"/> instance.</returns>
-    public static OpenFeatureBuilder AddProvider<TOptions, TProviderBuilder>(this OpenFeatureBuilder builder, Action<TProviderBuilder> configureBuilder)
+    public static OpenFeatureBuilder AddProvider<TOptions, TProviderBuilder>(this OpenFeatureBuilder builder, Action<TProviderBuilder>? configureBuilder = null)
         where TOptions : OpenFeatureOptions, new()
         where TProviderBuilder : FeatureProviderBuilder, new()
     {
@@ -70,9 +70,17 @@ public static partial class OpenFeatureBuilderExtensions
             options.AddDefaultProviderName();
         });
 
-        builder.Services.AddOptions<TProviderBuilder>()
-            .Validate(options => options != null, $"{typeof(TProviderBuilder).Name} configuration is invalid.")
-            .Configure(configureBuilder);
+        if (configureBuilder != null)
+        {
+            builder.Services.AddOptions<TProviderBuilder>()
+                .Validate(options => options != null, $"{typeof(TProviderBuilder).Name} configuration is invalid.")
+                .Configure(configureBuilder);
+        }
+        else
+        {
+            builder.Services.AddOptions<TProviderBuilder>()
+                .Configure(options => { });
+        }
 
         builder.Services.TryAddSingleton(static provider =>
         {
@@ -86,6 +94,17 @@ public static partial class OpenFeatureBuilderExtensions
     }
 
     /// <summary>
+    /// Adds a new feature provider with the default <see cref="OpenFeatureOptions"/> type and a specified configuration builder.
+    /// </summary>
+    /// <typeparam name="TProviderBuilder">The type of the provider builder.</typeparam>
+    /// <param name="builder">The <see cref="OpenFeatureBuilder"/> instance.</param>
+    /// <param name="configureBuilder">An action to configure the provider builder instance.</param>
+    /// <returns>The configured <see cref="OpenFeatureBuilder"/> instance.</returns>
+    public static OpenFeatureBuilder AddProvider<TProviderBuilder>(this OpenFeatureBuilder builder, Action<TProviderBuilder>? configureBuilder = null)
+        where TProviderBuilder : FeatureProviderBuilder, new()
+        => AddProvider<OpenFeatureOptions, TProviderBuilder>(builder, configureBuilder);
+
+    /// <summary>
     /// Adds a named feature provider with specified options and configuration builder.
     /// </summary>
     /// <typeparam name="TOptions">The <see cref="OpenFeatureOptions"/> type for configuring the feature provider.</typeparam>
@@ -94,7 +113,7 @@ public static partial class OpenFeatureBuilderExtensions
     /// <param name="name">The unique name of the provider.</param>
     /// <param name="configureBuilder">The action to configure the provider builder.</param>
     /// <returns>The <see cref="OpenFeatureBuilder"/> instance.</returns>
-    public static OpenFeatureBuilder AddProvider<TOptions, TProviderBuilder>(this OpenFeatureBuilder builder, string name, Action<TProviderBuilder> configureBuilder)
+    public static OpenFeatureBuilder AddProvider<TOptions, TProviderBuilder>(this OpenFeatureBuilder builder, string name, Action<TProviderBuilder>? configureBuilder = null)
         where TOptions : OpenFeatureOptions, new()
         where TProviderBuilder : FeatureProviderBuilder, new()
     {
@@ -107,9 +126,17 @@ public static partial class OpenFeatureBuilderExtensions
             options.AddProviderName(name);
         });
 
-        builder.Services.AddOptions<TProviderBuilder>(name)
-            .Validate(options => options != null, $"{typeof(TProviderBuilder).Name} configuration is invalid.")
-            .Configure(configureBuilder);
+        if (configureBuilder != null)
+        {
+            builder.Services.AddOptions<TProviderBuilder>(name)
+                .Validate(options => options != null, $"{typeof(TProviderBuilder).Name} configuration is invalid.")
+                .Configure(configureBuilder);
+        }
+        else
+        {
+            builder.Services.AddOptions<TProviderBuilder>(name)
+                .Configure(options => { });
+        }
 
         builder.Services.TryAddKeyedSingleton(name, static (provider, key) =>
         {
@@ -122,6 +149,18 @@ public static partial class OpenFeatureBuilderExtensions
 
         return builder;
     }
+
+    /// <summary>
+    /// Adds a named feature provider with a specified configuration builder, using default <see cref="OpenFeatureOptions"/>.
+    /// </summary>
+    /// <typeparam name="TProviderBuilder">The type of the provider builder.</typeparam>
+    /// <param name="builder">The <see cref="OpenFeatureBuilder"/> instance.</param>
+    /// <param name="name">The unique name of the provider.</param>
+    /// <param name="configureBuilder">An optional action to configure the provider builder instance.</param>
+    /// <returns>The configured <see cref="OpenFeatureBuilder"/> instance.</returns>
+    public static OpenFeatureBuilder AddProvider<TProviderBuilder>(this OpenFeatureBuilder builder, string name, Action<TProviderBuilder>? configureBuilder = null)
+        where TProviderBuilder : FeatureProviderBuilder, new()
+        => AddProvider<OpenFeatureOptions, TProviderBuilder>(builder, name, configureBuilder);
 
     /// <summary>
     /// Adds a feature client to the service collection, configuring it to work with a specific context if provided.

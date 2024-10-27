@@ -175,19 +175,19 @@ public static partial class OpenFeatureBuilderExtensions
     }
 
     /// <summary>
-    /// Configures a default client for OpenFeature using the provided <see cref="Func{T, TResult}"/>.
+    /// Configures a default client for OpenFeature using the provided factory function.
     /// </summary>
     /// <param name="builder">The <see cref="OpenFeatureBuilder"/> instance.</param>
-    /// <param name="getClient">
-    /// A function to retrieve an <see cref="IFeatureClient"/> based on the service provider and <see cref="PolicyNameOptions"/>.
+    /// <param name="clientFactory">
+    /// A factory function that creates an <see cref="IFeatureClient"/> based on the service provider and <see cref="PolicyNameOptions"/>.
     /// </param>
     /// <returns>The configured <see cref="OpenFeatureBuilder"/> instance.</returns>
-    internal static OpenFeatureBuilder AddDefaultClient(this OpenFeatureBuilder builder, Func<IServiceProvider, PolicyNameOptions, IFeatureClient> getClient)
+    internal static OpenFeatureBuilder AddDefaultClient(this OpenFeatureBuilder builder, Func<IServiceProvider, PolicyNameOptions, IFeatureClient> clientFactory)
     {
         builder.Services.TryAddScoped(provider =>
         {
             var policy = provider.GetRequiredService<IOptions<PolicyNameOptions>>().Value;
-            return getClient(provider, policy);
+            return clientFactory(provider, policy);
         });
 
         return builder;

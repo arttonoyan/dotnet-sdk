@@ -1,4 +1,4 @@
-namespace OpenFeature;
+namespace OpenFeature.DependencyInjection;
 
 /// <summary>
 ///  Options to configure OpenFeature

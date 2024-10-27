@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using OpenFeature.Internal;
+using OpenFeature.DependencyInjection.Internal;
 using Xunit;
 
 namespace OpenFeature.DependencyInjection.Tests;

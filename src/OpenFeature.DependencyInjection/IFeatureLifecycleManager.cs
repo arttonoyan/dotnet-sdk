@@ -1,4 +1,4 @@
-namespace OpenFeature;
+namespace OpenFeature.DependencyInjection;
 
 /// <summary>
 /// Defines the contract for managing the lifecycle of a feature api.

@@ -1,14 +1,15 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OpenFeature.Internal;
+using OpenFeature.DependencyInjection;
+using OpenFeature.DependencyInjection.Internal;
 
 namespace OpenFeature;
 
 /// <summary>
 /// Contains extension methods for the <see cref="IServiceCollection"/> class.
 /// </summary>
-public static class OpenFeatureServiceCollectionExtensions
+public static partial class OpenFeatureServiceCollectionExtensions
 {
     /// <summary>
     /// This method is used to add OpenFeature to the service collection.

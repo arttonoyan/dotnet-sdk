@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Xunit;
 
-namespace OpenFeature.Tests;
+namespace OpenFeature.DependencyInjection.Tests;
 
 public class OpenFeatureServiceCollectionExtensionsTests
 {

@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OpenFeature.Model;
 
-namespace OpenFeature;
+namespace OpenFeature.DependencyInjection;
 
 /// <summary>
 /// Contains extension methods for the <see cref="OpenFeatureBuilder"/> class.

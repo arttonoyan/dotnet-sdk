@@ -1,4 +1,4 @@
-namespace OpenFeature;
+namespace OpenFeature.DependencyInjection;
 
 /// <summary>
 /// Represents an abstract base class for building feature providers.

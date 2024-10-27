@@ -58,35 +58,35 @@ public partial class OpenFeatureBuilderExtensionsTests
         delegateCalled.Should().BeTrue("The delegate should be invoked.");
     }
 
-    //[Fact]
-    //public void AddProvider_ShouldAddProviderToCollection()
-    //{
-    //    // Act
-    //    var result = _systemUnderTest.AddProvider(_ => new NoOpFeatureProvider());
+    [Fact]
+    public void AddProvider_ShouldAddProviderToCollection()
+    {
+        // Act
+        var result = _systemUnderTest.AddProvider<NoOpFeatureProviderBuilder>();
 
-    //    // Assert
-    //    _systemUnderTest.IsContextConfigured.Should().BeFalse("The context should not be configured.");
-    //    result.Should().BeSameAs(_systemUnderTest, "The method should return the same builder instance.");
-    //    _services.Should().ContainSingle(serviceDescriptor =>
-    //        serviceDescriptor.ServiceType == typeof(FeatureProvider) &&
-    //        serviceDescriptor.Lifetime == ServiceLifetime.Singleton,
-    //        "A singleton service of type FeatureProvider should be added.");
-    //}
+        // Assert
+        _systemUnderTest.IsContextConfigured.Should().BeFalse("The context should not be configured.");
+        result.Should().BeSameAs(_systemUnderTest, "The method should return the same builder instance.");
+        _services.Should().ContainSingle(serviceDescriptor =>
+            serviceDescriptor.ServiceType == typeof(FeatureProvider) &&
+            serviceDescriptor.Lifetime == ServiceLifetime.Singleton,
+            "A singleton service of type FeatureProvider should be added.");
+    }
 
-    //[Fact]
-    //public void AddProvider_ShouldResolveCorrectProvider()
-    //{
-    //    // Arrange
-    //    _systemUnderTest.AddProvider(_ => new NoOpFeatureProvider());
+    [Fact]
+    public void AddProvider_ShouldResolveCorrectProvider()
+    {
+        // Arrange
+        _systemUnderTest.AddProvider<NoOpFeatureProviderBuilder>();
 
-    //    var serviceProvider = _services.BuildServiceProvider();
+        var serviceProvider = _services.BuildServiceProvider();
 
-    //    // Act
-    //    var provider = serviceProvider.GetService<FeatureProvider>();
+        // Act
+        var provider = serviceProvider.GetService<FeatureProvider>();
 
-    //    // Assert
-    //    _systemUnderTest.IsContextConfigured.Should().BeFalse("The context should not be configured.");
-    //    provider.Should().NotBeNull("The FeatureProvider should be resolvable.");
-    //    provider.Should().BeOfType<NoOpFeatureProvider>("The resolved provider should be of type DefaultFeatureProvider.");
-    //}
+        // Assert
+        _systemUnderTest.IsContextConfigured.Should().BeFalse("The context should not be configured.");
+        provider.Should().NotBeNull("The FeatureProvider should be resolvable.");
+        provider.Should().BeOfType<NoOpFeatureProvider>("The resolved provider should be of type DefaultFeatureProvider.");
+    }
 }

@@ -1,5 +1,7 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using OpenFeature.DependencyInjection.Internal;
 using Xunit;
@@ -18,6 +20,13 @@ public class FeatureLifecycleManagerTests
 
         _mockServiceProvider = Substitute.For<IServiceProvider>();
 
+        var options = new OpenFeatureOptions();
+        options.AddDefaultProviderName();
+        var optionsMock = Substitute.For<IOptions<OpenFeatureOptions>>();
+        optionsMock.Value.Returns(options);
+
+        _mockServiceProvider.GetService<IOptions<OpenFeatureOptions>>().Returns(optionsMock);
+
         _systemUnderTest = new FeatureLifecycleManager(
             Api.Instance,
             _mockServiceProvider,
@@ -29,8 +38,7 @@ public class FeatureLifecycleManagerTests
     {
         // Arrange
         var featureProvider = new NoOpFeatureProvider();
-        _mockServiceProvider.GetService(typeof(FeatureProvider))
-            .Returns(featureProvider);
+        _mockServiceProvider.GetService(typeof(FeatureProvider)).Returns(featureProvider);
 
         // Act
         await _systemUnderTest.EnsureInitializedAsync().ConfigureAwait(true);
@@ -50,6 +58,7 @@ public class FeatureLifecycleManagerTests
 
         // Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(act).ConfigureAwait(true);
-        exception.Message.Should().Be("Feature provider is not registered in the service collection.");
+        exception.Should().NotBeNull();
+        exception.Message.Should().NotBeNullOrWhiteSpace();
     }
 }

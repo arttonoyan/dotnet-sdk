@@ -221,6 +221,6 @@ public static partial class OpenFeatureBuilderExtensions
     /// <param name="builder">The <see cref="OpenFeatureBuilder"/> instance.</param>
     /// <param name="configureOptions">A delegate to configure <see cref="PolicyNameOptions"/>.</param>
     /// <returns>The configured <see cref="OpenFeatureBuilder"/> instance.</returns>
-    internal static OpenFeatureBuilder AddPolicyName(this OpenFeatureBuilder builder, Action<PolicyNameOptions> configureOptions)
+    public static OpenFeatureBuilder AddPolicyName(this OpenFeatureBuilder builder, Action<PolicyNameOptions> configureOptions)
         => AddPolicyName<PolicyNameOptions>(builder, configureOptions);
 }

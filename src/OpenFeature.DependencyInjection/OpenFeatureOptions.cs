@@ -5,7 +5,7 @@ namespace OpenFeature.DependencyInjection;
 /// </summary>
 public class OpenFeatureOptions
 {
-    private static readonly HashSet<string> _providerNames = [];
+    private readonly HashSet<string> _providerNames = [];
 
     /// <summary>
     /// Determines if a default provider has been registered.

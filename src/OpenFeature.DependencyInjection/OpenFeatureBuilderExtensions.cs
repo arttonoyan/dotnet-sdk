@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OpenFeature.DependencyInjection;
 using OpenFeature.Model;
 
-namespace OpenFeature.DependencyInjection;
+namespace OpenFeature;
 
 /// <summary>
 /// Contains extension methods for the <see cref="OpenFeatureBuilder"/> class.
@@ -62,6 +63,8 @@ public static partial class OpenFeatureBuilderExtensions
         where TOptions : OpenFeatureOptions, new()
         where TProviderBuilder : FeatureProviderBuilder, new()
     {
+        builder.HasDefaultProvider = true;
+
         builder.Services.Configure<TOptions>(options =>
         {
             options.AddDefaultProviderName();
@@ -96,6 +99,8 @@ public static partial class OpenFeatureBuilderExtensions
         where TProviderBuilder : FeatureProviderBuilder, new()
     {
         Guard.ThrowIfNullOrWhiteSpace(name, nameof(name));
+
+        builder.NamedProviderRegistrationCount++;
 
         builder.Services.Configure<TOptions>(options =>
         {
@@ -184,7 +189,7 @@ public static partial class OpenFeatureBuilderExtensions
     /// <returns>The configured <see cref="OpenFeatureBuilder"/> instance.</returns>
     internal static OpenFeatureBuilder AddDefaultClient(this OpenFeatureBuilder builder, Func<IServiceProvider, PolicyNameOptions, IFeatureClient> clientFactory)
     {
-        builder.Services.TryAddScoped(provider =>
+        builder.Services.AddScoped(provider =>
         {
             var policy = provider.GetRequiredService<IOptions<PolicyNameOptions>>().Value;
             return clientFactory(provider, policy);
@@ -194,12 +199,14 @@ public static partial class OpenFeatureBuilderExtensions
     }
 
     /// <summary>
-    /// Configures the policy name options for OpenFeature, allowing customization of feature client selection.
+    /// Configures policy name options for OpenFeature using the specified options type.
     /// </summary>
+    /// <typeparam name="TOptions">The type of options used to configure <see cref="PolicyNameOptions"/>.</typeparam>
     /// <param name="builder">The <see cref="OpenFeatureBuilder"/> instance.</param>
-    /// <param name="configureOptions">A delegate to configure the <see cref="PolicyNameOptions"/>.</param>
+    /// <param name="configureOptions">A delegate to configure <typeparamref name="TOptions"/>.</param>
     /// <returns>The configured <see cref="OpenFeatureBuilder"/> instance.</returns>
-    public static OpenFeatureBuilder AddPolicyName(this OpenFeatureBuilder builder, Action<PolicyNameOptions> configureOptions)
+    public static OpenFeatureBuilder AddPolicyName<TOptions>(this OpenFeatureBuilder builder, Action<TOptions> configureOptions)
+        where TOptions : PolicyNameOptions
     {
         Guard.ThrowIfNull(builder);
         Guard.ThrowIfNull(configureOptions);
@@ -207,4 +214,13 @@ public static partial class OpenFeatureBuilderExtensions
         builder.Services.Configure(configureOptions);
         return builder;
     }
+
+    /// <summary>
+    /// Configures the default policy name options for OpenFeature.
+    /// </summary>
+    /// <param name="builder">The <see cref="OpenFeatureBuilder"/> instance.</param>
+    /// <param name="configureOptions">A delegate to configure <see cref="PolicyNameOptions"/>.</param>
+    /// <returns>The configured <see cref="OpenFeatureBuilder"/> instance.</returns>
+    internal static OpenFeatureBuilder AddPolicyName(this OpenFeatureBuilder builder, Action<PolicyNameOptions> configureOptions)
+        => AddPolicyName<PolicyNameOptions>(builder, configureOptions);
 }

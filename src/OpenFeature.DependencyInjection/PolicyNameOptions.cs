@@ -1,12 +1,12 @@
-﻿namespace OpenFeature;
+namespace OpenFeature;
 
 /// <summary>
-/// Options to configure the default feature client name selection for OpenFeature.
+/// Options to configure the default feature client name.
 /// </summary>
 public class PolicyNameOptions
 {
     /// <summary>
-    /// A delegate to select the default feature client name based on the service provider context.
+    /// A delegate to select the default feature client name.
     /// </summary>
-    public Func<IServiceProvider, string?>? DefaultNameSelector { get; set; }
+    public Func<IServiceProvider, string?> DefaultNameSelector { get; set; } = null!;
 }

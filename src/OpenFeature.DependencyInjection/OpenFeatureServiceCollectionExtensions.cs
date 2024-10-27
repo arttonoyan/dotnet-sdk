@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OpenFeature.Internal;
-using OpenFeature.Model;
 
 namespace OpenFeature;
 
@@ -28,25 +28,15 @@ public static class OpenFeatureServiceCollectionExtensions
         var builder = new OpenFeatureBuilder(services);
         configure(builder);
 
-        if (builder.IsContextConfigured)
+        services.TryAddScoped(provider =>
         {
-            services.TryAddScoped<IFeatureClient>(static provider =>
+            var options = provider.GetRequiredService<IOptions<OpenFeatureOptions>>().Value;
+            if (!options.HasDefaultProvider)
             {
-                var api = provider.GetRequiredService<Api>();
-                var client = api.GetClient();
-                var context = provider.GetRequiredService<EvaluationContext>();
-                client.SetContext(context);
-                return client;
-            });
-        }
-        else
-        {
-            services.TryAddScoped<IFeatureClient>(static provider =>
-            {
-                var api = provider.GetRequiredService<Api>();
-                return api.GetClient();
-            });
-        }
+                return provider.GetRequiredKeyedService<IFeatureClient>(options.ProviderNames.First());
+            }
+            throw new InvalidOperationException("Default provider is not configured.");
+        });
 
         return services;
     }

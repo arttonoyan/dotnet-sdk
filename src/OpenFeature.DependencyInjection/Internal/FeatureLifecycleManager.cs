@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace OpenFeature.Internal;
 
@@ -20,12 +21,19 @@ internal sealed partial class FeatureLifecycleManager : IFeatureLifecycleManager
     public async ValueTask EnsureInitializedAsync(CancellationToken cancellationToken = default)
     {
         this.LogStartingInitializationOfFeatureProvider();
-        var featureProvider = _serviceProvider.GetService<FeatureProvider>();
-        if (featureProvider == null)
+
+        var options = _serviceProvider.GetRequiredService<IOptions<OpenFeatureOptions>>().Value;
+        if(options.HasDefaultProvider)
         {
-            throw new InvalidOperationException("Feature provider is not registered in the service collection.");
+            var featureProvider = _serviceProvider.GetRequiredService<FeatureProvider>();
+            await _featureApi.SetProviderAsync(featureProvider).ConfigureAwait(false);
         }
-        await _featureApi.SetProviderAsync(featureProvider).ConfigureAwait(false);
+
+        foreach (var name in options.ProviderNames)
+        {
+            var featureProvider = _serviceProvider.GetRequiredKeyedService<FeatureProvider>(name);
+            await _featureApi.SetProviderAsync(name, featureProvider).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc />

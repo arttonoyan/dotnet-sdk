@@ -141,8 +141,8 @@ public static partial class OpenFeatureBuilderExtensions
         builder.Services.TryAddKeyedSingleton(name, static (provider, key) =>
         {
             var options = provider.GetRequiredService<IOptionsMonitor<TProviderFactory>>();
-            var providerBuilder = options.Get(key!.ToString());
-            return providerBuilder.Create();
+            var providerFactory = options.Get(key!.ToString());
+            return providerFactory.Create();
         });
 
         builder.AddClient(name);

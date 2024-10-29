@@ -110,7 +110,7 @@ public static partial class OpenFeatureBuilderExtensions
     /// <typeparam name="TOptions">The <see cref="OpenFeatureOptions"/> type for configuring the feature provider.</typeparam>
     /// <typeparam name="TProviderFactory">The type of the provider factory implementing <see cref="IFeatureProviderFactory"/>.</typeparam>
     /// <param name="builder">The <see cref="OpenFeatureBuilder"/> instance.</param>
-    /// <param name="name">The unique name of the provider.</param>
+    /// <param name="domain">The unique name of the provider.</param>
     /// <param name="configureFactory">An optional action to configure the provider factory of type <typeparamref name="TProviderFactory"/>.</param>
     /// <returns>The <see cref="OpenFeatureBuilder"/> instance.</returns>
     public static OpenFeatureBuilder AddProvider<TOptions, TProviderFactory>(this OpenFeatureBuilder builder, string name, Action<TProviderFactory>? configureFactory = null)

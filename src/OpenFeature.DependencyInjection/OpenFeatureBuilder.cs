@@ -29,7 +29,7 @@ public class OpenFeatureBuilder(IServiceCollection services)
     public bool HasDefaultProvider { get; internal set; }
 
     /// <summary>
-    /// Gets the count of named feature providers that have been registered.
+    /// Gets the count of domain-bound providers that have been registered.
     /// This count does not include the default provider.
     /// </summary>
     public int DomainBoundProviderRegistrationCount { get; internal set; }

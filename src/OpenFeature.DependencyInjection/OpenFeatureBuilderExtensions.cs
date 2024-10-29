@@ -151,7 +151,7 @@ public static partial class OpenFeatureBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a named feature provider with a specified configuration builder, using default <see cref="OpenFeatureOptions"/>.
+    /// Adds a feature provider with a specified configuration builder for the specified domain, using default <see cref="OpenFeatureOptions"/>.
     /// </summary>
     /// <typeparam name="TProviderFactory">The type of the provider factory implementing <see cref="IFeatureProviderFactory"/>.</typeparam>
     /// <param name="builder">The <see cref="OpenFeatureBuilder"/> instance.</param>

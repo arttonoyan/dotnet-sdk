@@ -170,7 +170,7 @@ public static partial class OpenFeatureBuilderExtensions
     /// <returns>The <see cref="OpenFeatureBuilder"/> instance.</returns>
     internal static OpenFeatureBuilder AddClient(this OpenFeatureBuilder builder, string? name = null)
     {
-        if (name == null)
+        if (string.IsNullOrWhiteSpace(name))
         {
             if (builder.IsContextConfigured)
             {

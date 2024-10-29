@@ -105,7 +105,7 @@ public static partial class OpenFeatureBuilderExtensions
         => AddProvider<OpenFeatureOptions, TProviderFactory>(builder, configureFactory);
 
     /// <summary>
-    /// Adds a named feature provider with specified options and configuration builder.
+    /// Adds a feature provider with specified options and configuration builder for the specified domain.
     /// </summary>
     /// <typeparam name="TOptions">The <see cref="OpenFeatureOptions"/> type for configuring the feature provider.</typeparam>
     /// <typeparam name="TProviderFactory">The type of the provider factory implementing <see cref="IFeatureProviderFactory"/>.</typeparam>

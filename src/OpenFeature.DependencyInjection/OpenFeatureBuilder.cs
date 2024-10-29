@@ -32,7 +32,7 @@ public class OpenFeatureBuilder(IServiceCollection services)
     /// Gets the count of named feature providers that have been registered.
     /// This count does not include the default provider.
     /// </summary>
-    public int NamedProviderRegistrationCount { get; internal set; }
+    public int DomainBoundProviderRegistrationCount { get; internal set; }
 
     /// <summary>
     /// Validates the current configuration, ensuring that a policy is set when multiple providers are registered

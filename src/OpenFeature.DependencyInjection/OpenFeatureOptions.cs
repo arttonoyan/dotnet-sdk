@@ -34,7 +34,7 @@ public class OpenFeatureOptions
     /// <param name="name">The name of the feature provider to register. Registers as default if null.</param>
     public void AddProviderName(string? name)
     {
-        if (name == null)
+        if (string.IsNullOrWhiteSpace(name))
         {
             HasDefaultProvider = true;
         }
@@ -42,7 +42,7 @@ public class OpenFeatureOptions
         {
             lock (_providerNames)
             {
-                _providerNames.Add(name);
+                _providerNames.Add(name!);
             }
         }
     }

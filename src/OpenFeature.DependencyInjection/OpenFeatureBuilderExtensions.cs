@@ -117,35 +117,35 @@ public static partial class OpenFeatureBuilderExtensions
         where TOptions : OpenFeatureOptions, new()
         where TProviderFactory : class, IFeatureProviderFactory, new()
     {
-        Guard.ThrowIfNullOrWhiteSpace(name, nameof(name));
+        Guard.ThrowIfNullOrWhiteSpace(domain, nameof(domain));
 
         builder.NamedProviderRegistrationCount++;
 
         builder.Services.Configure<TOptions>(options =>
         {
-            options.AddProviderName(name);
+            options.AddProviderName(domain);
         });
 
         if (configureFactory != null)
         {
-            builder.Services.AddOptions<TProviderFactory>(name)
+            builder.Services.AddOptions<TProviderFactory>(domain)
                 .Validate(options => options != null, $"{typeof(TProviderFactory).Name} configuration is invalid.")
                 .Configure(configureFactory);
         }
         else
         {
-            builder.Services.AddOptions<TProviderFactory>(name)
+            builder.Services.AddOptions<TProviderFactory>(domain)
                 .Configure(options => { });
         }
 
-        builder.Services.TryAddKeyedSingleton(name, static (provider, key) =>
+        builder.Services.TryAddKeyedSingleton(domain, static (provider, key) =>
         {
             var options = provider.GetRequiredService<IOptionsMonitor<TProviderFactory>>();
             var providerFactory = options.Get(key!.ToString());
             return providerFactory.Create();
         });
 
-        builder.AddClient(name);
+        builder.AddClient(domain);
 
         return builder;
     }
@@ -158,9 +158,9 @@ public static partial class OpenFeatureBuilderExtensions
     /// <param name="domain">The unique domain of the provider.</param>
     /// <param name="configureFactory">An optional action to configure the provider factory of type <typeparamref name="TProviderFactory"/>.</param>
     /// <returns>The configured <see cref="OpenFeatureBuilder"/> instance.</returns>
-    public static OpenFeatureBuilder AddProvider<TProviderFactory>(this OpenFeatureBuilder builder, string name, Action<TProviderFactory>? configureFactory = null)
+    public static OpenFeatureBuilder AddProvider<TProviderFactory>(this OpenFeatureBuilder builder, string domain, Action<TProviderFactory>? configureFactory = null)
         where TProviderFactory : class, IFeatureProviderFactory, new()
-        => AddProvider<OpenFeatureOptions, TProviderFactory>(builder, name, configureFactory);
+        => AddProvider<OpenFeatureOptions, TProviderFactory>(builder, domain, configureFactory);
 
     /// <summary>
     /// Adds a feature client to the service collection, configuring it to work with a specific context if provided.

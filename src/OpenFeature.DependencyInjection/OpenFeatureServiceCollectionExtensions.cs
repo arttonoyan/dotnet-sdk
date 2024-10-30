@@ -31,7 +31,7 @@ public static partial class OpenFeatureServiceCollectionExtensions
 
         // If a default provider is specified without additional providers,
         // return early as no extra configuration is needed.
-        if (builder.HasDefaultProvider && builder.NamedProviderRegistrationCount == 0)
+        if (builder.HasDefaultProvider && builder.DomainBoundProviderRegistrationCount == 0)
         {
             return services;
         }

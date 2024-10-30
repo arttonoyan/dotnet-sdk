@@ -119,7 +119,7 @@ public static partial class OpenFeatureBuilderExtensions
     {
         Guard.ThrowIfNullOrWhiteSpace(domain, nameof(domain));
 
-        builder.NamedProviderRegistrationCount++;
+        builder.DomainBoundProviderRegistrationCount++;
 
         builder.Services.Configure<TOptions>(options =>
         {

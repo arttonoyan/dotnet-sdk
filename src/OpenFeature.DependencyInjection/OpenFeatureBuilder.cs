@@ -46,12 +46,12 @@ public class OpenFeatureBuilder(IServiceCollection services)
     {
         if (!IsPolicyConfigured)
         {
-            if (NamedProviderRegistrationCount > 1)
+            if (DomainBoundProviderRegistrationCount > 1)
             {
                 throw new InvalidOperationException("Multiple providers have been registered, but no policy has been configured.");
             }
 
-            if (HasDefaultProvider && NamedProviderRegistrationCount == 1)
+            if (HasDefaultProvider && DomainBoundProviderRegistrationCount == 1)
             {
                 throw new InvalidOperationException("A default provider and an additional provider have been registered without a policy configuration.");
             }

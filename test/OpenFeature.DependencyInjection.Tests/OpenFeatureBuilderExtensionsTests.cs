@@ -62,7 +62,7 @@ public partial class OpenFeatureBuilderExtensionsTests
     public void AddProvider_ShouldAddProviderToCollection()
     {
         // Act
-        var result = _systemUnderTest.AddProvider(_ => new NoOpFeatureProvider());
+        var result = _systemUnderTest.AddProvider<NoOpFeatureProviderFactory>();
 
         // Assert
         _systemUnderTest.IsContextConfigured.Should().BeFalse("The context should not be configured.");
@@ -77,7 +77,7 @@ public partial class OpenFeatureBuilderExtensionsTests
     public void AddProvider_ShouldResolveCorrectProvider()
     {
         // Arrange
-        _systemUnderTest.AddProvider(_ => new NoOpFeatureProvider());
+        _systemUnderTest.AddProvider<NoOpFeatureProviderFactory>();
 
         var serviceProvider = _services.BuildServiceProvider();
 

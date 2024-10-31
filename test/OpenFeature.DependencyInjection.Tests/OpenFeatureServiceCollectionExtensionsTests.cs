@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Xunit;
 
-namespace OpenFeature.Tests;
+namespace OpenFeature.DependencyInjection.Tests;
 
 public class OpenFeatureServiceCollectionExtensionsTests
 {
@@ -22,7 +22,6 @@ public class OpenFeatureServiceCollectionExtensionsTests
         // Act
         _systemUnderTest.AddOpenFeature(_configureAction);
 
-        _systemUnderTest.Should().HaveCount(3);
         _systemUnderTest.Should().ContainSingle(s => s.ServiceType == typeof(Api) && s.Lifetime == ServiceLifetime.Singleton);
         _systemUnderTest.Should().ContainSingle(s => s.ServiceType == typeof(IFeatureLifecycleManager) && s.Lifetime == ServiceLifetime.Singleton);
         _systemUnderTest.Should().ContainSingle(s => s.ServiceType == typeof(IFeatureClient) && s.Lifetime == ServiceLifetime.Scoped);

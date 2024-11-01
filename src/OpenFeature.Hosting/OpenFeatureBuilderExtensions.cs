@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OpenFeature.DependencyInjection;
+using OpenFeature.Hosting;
 
 namespace OpenFeature;
 

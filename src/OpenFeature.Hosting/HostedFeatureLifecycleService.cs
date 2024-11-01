@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenFeature.DependencyInjection;
 
-namespace OpenFeature;
+namespace OpenFeature.Hosting;
 
 /// <summary>
 /// A hosted service that manages the lifecycle of features within the application.

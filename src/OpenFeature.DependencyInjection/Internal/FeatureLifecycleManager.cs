@@ -23,7 +23,7 @@ internal sealed partial class FeatureLifecycleManager : IFeatureLifecycleManager
         this.LogStartingInitializationOfFeatureProvider();
 
         var options = _serviceProvider.GetRequiredService<IOptions<OpenFeatureOptions>>().Value;
-        if(options.HasDefaultProvider)
+        if (options.HasDefaultProvider)
         {
             var featureProvider = _serviceProvider.GetRequiredService<FeatureProvider>();
             await _featureApi.SetProviderAsync(featureProvider).ConfigureAwait(false);

@@ -5,6 +5,9 @@ namespace OpenFeature.DependencyInjection;
 /// This factory interface enables custom configuration and initialization of feature providers 
 /// to support domain-specific or application-specific feature flag management.
 /// </summary>
+#if NET8_0_OR_GREATER
+[System.Diagnostics.CodeAnalysis.Experimental(Diagnostics.FeatureCodes.NewDi)]
+#endif
 public interface IFeatureProviderFactory
 {
     /// <summary>

@@ -8,6 +8,9 @@ namespace OpenFeature.DependencyInjection.Providers.Memory;
 /// This factory allows for the customization of feature flags to facilitate 
 /// testing and lightweight feature flag management without external dependencies.
 /// </summary>
+#if NET8_0_OR_GREATER
+[System.Diagnostics.CodeAnalysis.Experimental(Diagnostics.FeatureCodes.NewDi)]
+#endif
 public class InMemoryProviderFactory : IFeatureProviderFactory
 {
     /// <summary>

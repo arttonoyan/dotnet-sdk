@@ -9,6 +9,9 @@ namespace OpenFeature;
 /// <summary>
 /// Contains extension methods for the <see cref="OpenFeatureBuilder"/> class.
 /// </summary>
+#if NET8_0_OR_GREATER
+[System.Diagnostics.CodeAnalysis.Experimental(DependencyInjection.Diagnostics.FeatureCodes.NewDi)]
+#endif
 public static partial class OpenFeatureBuilderExtensions
 {
     /// <summary>

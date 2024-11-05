@@ -5,6 +5,9 @@ namespace OpenFeature.DependencyInjection.Providers.Memory;
 /// <summary>
 /// Extension methods for configuring feature providers with <see cref="OpenFeatureBuilder"/>.
 /// </summary>
+#if NET8_0_OR_GREATER
+[System.Diagnostics.CodeAnalysis.Experimental(Diagnostics.FeatureCodes.NewDi)]
+#endif
 public static partial class FeatureBuilderExtensions
 {
     /// <summary>

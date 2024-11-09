@@ -11,8 +11,7 @@ namespace OpenFeature.DependencyInjection.Diagnostics;
 /// <para>
 /// <strong>Basic Information</strong><br/>
 /// These identifiers conform to OpenFeature’s Diagnostics Specifications, allowing developers to recognize 
-/// and manage experimental features effectively. For more details, refer to the 
-/// <a href="https://github.com/open-feature/dotnet-sdk/docs/diagnostics/README.md">Diagnostics Specifications</a>.
+/// and manage experimental features effectively.
 /// </para>
 /// </remarks>
 /// <example>

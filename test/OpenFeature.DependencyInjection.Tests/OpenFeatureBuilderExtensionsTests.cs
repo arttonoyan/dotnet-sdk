@@ -58,9 +58,9 @@ public partial class OpenFeatureBuilderExtensionsTests
         delegateCalled.Should().BeTrue("The delegate should be invoked.");
     }
 
-    #if NET8_0_OR_GREATER
+#if NET8_0_OR_GREATER
     [System.Diagnostics.CodeAnalysis.Experimental(Diagnostics.FeatureCodes.NewDi)]
-    #endif
+#endif
     [Fact]
     public void AddProvider_ShouldAddProviderToCollection()
     {
@@ -76,9 +76,9 @@ public partial class OpenFeatureBuilderExtensionsTests
             "A singleton service of type FeatureProvider should be added.");
     }
 
-    #if NET8_0_OR_GREATER
+#if NET8_0_OR_GREATER
     [System.Diagnostics.CodeAnalysis.Experimental(Diagnostics.FeatureCodes.NewDi)]
-    #endif
+#endif
     [Fact]
     public void AddProvider_ShouldResolveCorrectProvider()
     {

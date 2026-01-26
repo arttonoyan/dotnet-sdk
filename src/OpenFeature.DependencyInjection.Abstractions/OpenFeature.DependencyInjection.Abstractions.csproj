@@ -13,4 +13,9 @@
     <ProjectReference Include="..\OpenFeature\OpenFeature.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="OpenFeature.Providers.DependencyInjection" />
+    <InternalsVisibleTo Include="OpenFeature.Hosting" />
+  </ItemGroup>
+
 </Project>

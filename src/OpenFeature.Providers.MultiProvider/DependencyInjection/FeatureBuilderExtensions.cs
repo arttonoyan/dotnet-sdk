@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OpenFeature.Hosting;
+using OpenFeature.DependencyInjection.Abstractions;
 
 namespace OpenFeature.Providers.MultiProvider.DependencyInjection;
 
@@ -31,7 +31,7 @@ public static class FeatureBuilderExtensions
             throw new ArgumentNullException(nameof(configure));
         }
 
-        return (OpenFeatureBuilder)builder.AddProvider(
+        return builder.AddProvider(
             serviceProvider => CreateMultiProviderFromConfigure(serviceProvider, configure));
     }
 

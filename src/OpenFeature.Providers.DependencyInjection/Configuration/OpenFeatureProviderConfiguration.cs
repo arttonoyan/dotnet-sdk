@@ -5,6 +5,12 @@ namespace OpenFeature.Providers.DependencyInjection;
 /// <summary>
 /// Captures provider-related configuration collected during builder setup.
 /// </summary>
+/// <remarks>
+/// This type represents build-time state. The runtime source of truth remains
+/// <see cref="OpenFeatureProviderOptions"/>, which is populated from this state
+/// during registration. The duplication is intentional to keep build-time logic
+/// decoupled from options resolution.
+/// </remarks>
 public sealed class OpenFeatureProviderConfiguration
 {
     private readonly HashSet<string> _domains = new(StringComparer.Ordinal);
@@ -47,12 +53,12 @@ public sealed class OpenFeatureProviderConfiguration
     }
 
     /// <summary>
-    /// 
+    /// Indicates whether any provider (default or domain-scoped) has been registered.
     /// </summary>
     public bool IsProviderRegistered => HasDefaultProvider || _domains.Count > 0;
 
     /// <summary>
-    /// 
+    /// Validates provider configuration rules that must be enforced at build time.
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
     public void Validate()
@@ -60,11 +66,6 @@ public sealed class OpenFeatureProviderConfiguration
         if (IsPolicyConfigured)
         {
             return;
-        }
-
-        if (IsProviderRegistered is false)
-        {
-            throw new InvalidOperationException("No providers have been registered.");
         }
 
         if (_domains.Count > 1)

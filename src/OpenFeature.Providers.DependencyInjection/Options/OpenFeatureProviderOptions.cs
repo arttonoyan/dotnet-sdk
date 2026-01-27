@@ -17,18 +17,6 @@ public class OpenFeatureProviderOptions : OpenFeatureOptions
     public bool HasDefaultProvider { get; internal set; }
 
     /// <summary>
-    /// Gets the count of domain-bound providers that have been registered.
-    /// This count does not include the default provider.
-    /// </summary>
-    public int DomainBoundProviderRegistrationCount { get; internal set; }
-
-    /// <summary>
-    /// Indicates whether the policy has been configured.
-    /// </summary>
-    [Obsolete("This property is no longer used.")]
-    public bool IsPolicyConfigured { get; internal set; }
-
-    /// <summary>
     /// The <see cref="Type"/> of the configured feature provider, if any.
     /// Typically set by higher-level configuration.
     /// </summary>
@@ -71,30 +59,4 @@ public class OpenFeatureProviderOptions : OpenFeatureOptions
             _providerNames.Add(name!);
         }
     }
-
-    ///// <summary>
-    ///// Validates the current configuration, ensuring that a policy is set when multiple providers are registered
-    ///// or when a default provider is registered alongside another provider.
-    ///// </summary>
-    ///// <exception cref="InvalidOperationException">
-    ///// Thrown if multiple providers are registered without a policy, or if both a default provider 
-    ///// and an additional provider are registered without a policy configuration.
-    ///// </exception>
-    //public void Validate()
-    //{
-    //    if (IsPolicyConfigured)
-    //    {
-    //        return;
-    //    }
-
-    //    if (DomainBoundProviderRegistrationCount > 1)
-    //    {
-    //        throw new InvalidOperationException("Multiple providers have been registered, but no policy has been configured.");
-    //    }
-
-    //    if (HasDefaultProvider && DomainBoundProviderRegistrationCount == 1)
-    //    {
-    //        throw new InvalidOperationException("A default provider and an additional provider have been registered without a policy configuration.");
-    //    }
-    //}
 }

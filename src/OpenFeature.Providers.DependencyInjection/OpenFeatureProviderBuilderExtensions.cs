@@ -224,22 +224,23 @@ public static partial class OpenFeatureProviderBuilderExtensions
     public static OpenFeatureBuilder AddPolicyName(this OpenFeatureBuilder builder, Action<PolicyNameOptions> configureOptions)
         => AddPolicyName<PolicyNameOptions>(builder, configureOptions);
 
-    private static OpenFeatureBuilder EnsureDefaultPolicyName(this OpenFeatureBuilder builder)
-    {
-        builder.Services.AddOptions<PolicyNameOptions>();
-        return builder.AddComponent(new ProviderPolicyComponent());
-    }
 }
 
-internal sealed class ProviderPolicyComponent : IOpenFeatureComponent, IOpenFeatureFinalizer
+internal sealed class ProviderPolicyComponent : OpenFeatureComponent
 {
-    public void Register(OpenFeatureComponentContext context)
+    public override void Register(OpenFeatureComponentContext context)
     {
         context.Services.AddOptions<PolicyNameOptions>();
         context.Services.AddOptions<OpenFeatureProviderOptions>();
     }
 
-    public void Finalize(OpenFeatureComponentContext context)
+    public override void Build(OpenFeatureComponentContext context)
+    {
+        var configuration = context.GetOrAddState(static () => new OpenFeatureProviderConfiguration());
+        configuration.IsPolicyConfigured = true;
+    }
+
+    public override void Finalize(OpenFeatureComponentContext context)
     {
         context.Services.PostConfigure<PolicyNameOptions>(options =>
         {
@@ -257,22 +258,28 @@ internal sealed class ProviderPolicyComponent : IOpenFeatureComponent, IOpenFeat
     }
 }
 
-internal sealed class DefaultProviderComponent(Func<IServiceProvider, FeatureProvider> factory) : IOpenFeatureComponent
+internal sealed class DefaultProviderComponent(Func<IServiceProvider, FeatureProvider> factory) : OpenFeatureComponent
 {
     private readonly Func<IServiceProvider, FeatureProvider> _factory = factory;
 
-    public void Register(OpenFeatureComponentContext context)
+    public override void Register(OpenFeatureComponentContext context)
         => context.Services.TryAddTransient(_factory);
+
+    public override void Build(OpenFeatureComponentContext context)
+    {
+        var configuration = context.GetOrAddState(static () => new OpenFeatureProviderConfiguration());
+        configuration.HasDefaultProvider = true;
+    }
 }
 
 internal sealed class NamedProviderComponent(
     string name,
-    Func<IServiceProvider, string, FeatureProvider> factory) : IOpenFeatureComponent
+    Func<IServiceProvider, string, FeatureProvider> factory) : OpenFeatureComponent
 {
     private readonly string _name = name;
     private readonly Func<IServiceProvider, string, FeatureProvider> _factory = factory;
 
-    public void Register(OpenFeatureComponentContext context)
+    public override void Register(OpenFeatureComponentContext context)
     {
         context.Services.TryAddKeyedTransient(_name, (sp, key) =>
         {
@@ -282,6 +289,12 @@ internal sealed class NamedProviderComponent(
 
             return _factory(sp, k!);
         });
+    }
+
+    public override void Build(OpenFeatureComponentContext context)
+    {
+        var configuration = context.GetOrAddState(static () => new OpenFeatureProviderConfiguration());
+        configuration.AddDomain(_name);
     }
 }
 
@@ -301,27 +314,20 @@ internal static class ProviderPolicyDefaults
     }
 }
 
-internal sealed class ProviderRegistryState
+internal sealed class ProviderPolicyFinalizer : OpenFeatureComponent
 {
-    public bool HasDefault { get; set; }
-    public int NamedCount { get; set; }
-    public HashSet<string> Names { get; } = new(StringComparer.Ordinal);
-}
-
-internal static class ProviderRegistryStateExtensions
-{
-    public static ProviderRegistryState GetProviderState(this OpenFeatureComponentContext context)
-        => context.GetOrAddState(static () => new ProviderRegistryState());
-}
-
-internal sealed class ProviderPolicyFinalizer : IOpenFeatureComponent, IOpenFeatureFinalizer
-{
-    public void Register(OpenFeatureComponentContext context)
+    public override void Register(OpenFeatureComponentContext context)
     {
         context.Services.AddOptions<PolicyNameOptions>();
     }
 
-    public void Finalize(OpenFeatureComponentContext context)
+    public override void Build(OpenFeatureComponentContext context)
+    {
+        var configuration = context.GetOrAddState(static () => new OpenFeatureProviderConfiguration());
+        configuration.IsPolicyConfigured = true;
+    }
+
+    public override void Finalize(OpenFeatureComponentContext context)
     {
         context.Services.PostConfigure<PolicyNameOptions>(options =>
         {

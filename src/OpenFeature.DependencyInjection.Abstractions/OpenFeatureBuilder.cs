@@ -2,31 +2,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OpenFeature.DependencyInjection.Abstractions;
 
-///// <summary>
-///// Describes a <see cref="OpenFeatureBuilder"/> backed by an <see cref="IServiceCollection"/>.
-///// </summary>
-///// <param name="services">The services being configured.</param>
-//public class OpenFeatureBuilder(IServiceCollection services)
-//{
-//    /// <summary> The services being configured. </summary>
-//    public IServiceCollection Services { get; } = services;
-
-//    /// <summary>
-//    /// Indicates whether the evaluation context has been configured.
-//    /// This property is used to determine if specific configurations or services
-//    /// should be initialized based on the presence of an evaluation context.
-//    /// </summary>
-//    public bool IsContextConfigured { get; internal set; }
-//}
-
-// Version 3
-
 /// <summary>
 /// 
 /// </summary>
 public sealed class OpenFeatureBuilder
 {
-    private readonly Dictionary<Type, object> _state;
+    private readonly OpenFeatureComponentRegistory _registory;
     private readonly List<IOpenFeatureComponent> _components;
 
     /// <summary>
@@ -37,12 +18,13 @@ public sealed class OpenFeatureBuilder
     {
         if (services is null) throw new ArgumentNullException(nameof(services));
 
-        _state = [];
+        _registory = new OpenFeatureComponentRegistory();
         _components = [];
         Services = services;
     }
 
     internal IReadOnlyList<IOpenFeatureComponent> Components => _components;
+    internal OpenFeatureComponentRegistory Registry => _registory;
 
     /// <summary>
     /// 
@@ -58,11 +40,25 @@ public sealed class OpenFeatureBuilder
         if (component is null) throw new ArgumentNullException(nameof(component));
 
         _components.Add(component);
-        component.Register(new OpenFeatureComponentContext(Services, _state));
+        component.Register(new OpenFeatureComponentContext(Services, _registory));
         return this;
     }
 
-    internal OpenFeatureComponentContext CreateContext() => new(Services, _state);
+    /// <summary>
+    /// Runs all build steps and returns the component state.
+    /// </summary>
+    public OpenFeatureComponentRegistory Build()
+    {
+        var context = CreateComponentContext();
+        foreach (var component in _components.OfType<IOpenFeatureBuilderContributor>())
+        {
+            component.Build(context);
+        }
+
+        return _registory;
+    }
+
+    internal OpenFeatureComponentContext CreateComponentContext() => new(Services, _registory);
 }
 
 /// <summary>
@@ -70,12 +66,12 @@ public sealed class OpenFeatureBuilder
 /// </summary>
 public sealed class OpenFeatureComponentContext
 {
-    private readonly Dictionary<Type, object> _state;
+    private readonly OpenFeatureComponentRegistory _registry;
 
-    internal OpenFeatureComponentContext(IServiceCollection services, Dictionary<Type, object> state)
+    internal OpenFeatureComponentContext(IServiceCollection services, OpenFeatureComponentRegistory registry)
     {
         Services = services;
-        _state = state;
+        _registry = registry;
     }
 
     /// <summary>
@@ -83,33 +79,17 @@ public sealed class OpenFeatureComponentContext
     /// </summary>
     public IServiceCollection Services { get; }
 
-    /// <summary>Gets an existing state instance of <typeparamref name="TState"/> or creates and stores one.</summary>
+    /// <summary>
+    /// Get or create component state scoped to the builder.
+    /// </summary>
     public TState GetOrAddState<TState>(Func<TState> factory) where TState : class
-    {
-        if (factory is null) throw new ArgumentNullException(nameof(factory));
+        => _registry.GetOrAddState(factory);
 
-        if (_state.TryGetValue(typeof(TState), out var existing))
-        {
-            return (TState)existing;
-        }
-
-        var created = factory();
-        _state[typeof(TState)] = created;
-        return created;
-    }
-
-    /// <summary>Gets an existing state instance of <typeparamref name="TState"/> if present.</summary>
+    /// <summary>
+    /// Try to get component state scoped to the builder.
+    /// </summary>
     public bool TryGetState<TState>(out TState? value) where TState : class
-    {
-        if (_state.TryGetValue(typeof(TState), out var existing))
-        {
-            value = (TState)existing;
-            return true;
-        }
-
-        value = null;
-        return false;
-    }
+        => _registry.TryGetState(out value);
 }
 
 /// <summary>
@@ -139,6 +119,18 @@ public interface IOpenFeatureFinalizer
 /// <summary>
 /// 
 /// </summary>
+public interface IOpenFeatureBuilderContributor
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="context"></param>
+    void Build(OpenFeatureComponentContext context);
+}
+
+/// <summary>
+/// 
+/// </summary>
 public interface IOpenFeatureValidator
 {
     /// <summary>
@@ -151,13 +143,100 @@ public interface IOpenFeatureValidator
 /// <summary>
 /// 
 /// </summary>
-/// <param name="services"></param>
-public sealed class OpenFeatureValidationContext(IServiceProvider services)
+public abstract class OpenFeatureComponent : IOpenFeatureComponent, IOpenFeatureFinalizer, IOpenFeatureValidator, IOpenFeatureBuilderContributor
 {
     /// <summary>
     /// 
     /// </summary>
-    public IServiceProvider Services { get; } = services;
+    /// <param name="context"></param>
+    public abstract void Register(OpenFeatureComponentContext context);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="context"></param>
+    public virtual void Finalize(OpenFeatureComponentContext context) { }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="context"></param>
+    public virtual void Build(OpenFeatureComponentContext context) { }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="context"></param>
+    public virtual void Validate(OpenFeatureValidationContext context) { }
+}
+
+/// <summary>
+/// 
+/// </summary>
+public sealed class OpenFeatureComponentRegistory
+{
+    private readonly Dictionary<Type, object> _state = new();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TState"></typeparam>
+    /// <param name="factory"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public TState GetOrAddState<TState>(Func<TState> factory) where TState : class
+    {
+        if (factory is null) throw new ArgumentNullException(nameof(factory));
+
+        lock (_state)
+        {
+            if (_state.TryGetValue(typeof(TState), out var existing))
+            {
+                return (TState)existing;
+            }
+
+            var created = factory();
+            _state[typeof(TState)] = created;
+            return created;
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TState"></typeparam>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public bool TryGetState<TState>(out TState? value) where TState : class
+    {
+        lock (_state)
+        {
+            if (_state.TryGetValue(typeof(TState), out var existing))
+            {
+                value = (TState)existing;
+                return true;
+            }
+        }
+
+        value = null;
+        return false;
+    }
+}
+
+/// <summary>
+/// 
+/// </summary>
+public sealed class OpenFeatureValidationContext(IServiceCollection services, OpenFeatureComponentRegistory registry)
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public IServiceCollection Services { get; } = services;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public OpenFeatureComponentRegistory Registry { get; } = registry;
 
 
     private readonly List<string> _errors = [];

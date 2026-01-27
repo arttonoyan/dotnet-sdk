@@ -81,16 +81,30 @@ public static partial class OpenFeatureServiceCollectionExtensions
 
         services.AddOptions<OpenFeatureOptions>();
         services.AddOptions<OpenFeatureProviderOptions>();
-        // services.Configure<OpenFeatureOptions>(c => { }); // Ensures IOptions<OpenFeatureOptions> is available even when no providers are configured.
-        
+
         var builder = new OpenFeatureBuilder(services);
         configure(builder);
 
+        var buildState = builder.Build();
+        var providerConfiguration = buildState.GetProviderConfiguration();
+        ConfigureClients(builder, providerConfiguration);
+
         // Finalize components without building the container
-        var context = builder.CreateContext();
+        var context = builder.CreateComponentContext();
         foreach (var finalizer in builder.Components.OfType<IOpenFeatureFinalizer>())
         {
             finalizer.Finalize(context);
+        }
+
+        var validationContext = new OpenFeatureValidationContext(services, builder.Registry);
+        foreach (var validator in builder.Components.OfType<IOpenFeatureValidator>())
+        {
+            validator.Validate(validationContext);
+        }
+
+        if (validationContext.Errors.Count > 0)
+        {
+            throw new OpenFeatureConfigurationException(validationContext.Errors);
         }
 
         services.AddHostedService<HostedFeatureLifecycleService>();
@@ -98,28 +112,25 @@ public static partial class OpenFeatureServiceCollectionExtensions
         return services;
     }
 
-    //internal static OpenFeatureBuilder AddPolicyBasedClient(this OpenFeatureBuilder builder)
-    //{
-    //    builder.Services.AddScoped(provider =>
-    //    {
-    //        var policy = provider.GetRequiredService<IOptions<PolicyNameOptions>>().Value;
-    //        var name = policy.DefaultNameSelector(provider);
-    //        return ResolveFeatureClient(provider, name);
-    //    });
+    private static void ConfigureClients(OpenFeatureBuilder builder, OpenFeatureProviderConfiguration configuration)
+    {
+        //configuration.Validate();
 
-    //    return builder;
-    //}
+        //if (configuration.HasDefaultProvider)
+        //{
+        //    builder.AddClient();
+        //}
 
-    //private static IFeatureClient ResolveFeatureClient(IServiceProvider provider, string? name = null)
-    //{
-    //    var api = provider.GetRequiredService<Api>();
-    //    var client = api.GetClient(name);
-    //    var context = provider.GetService<EvaluationContext>();
-    //    if (context != null)
-    //    {
-    //        client.SetContext(context);
-    //    }
+        builder.AddClient();
 
-    //    return client;
-    //}
+        foreach (var domain in configuration.Domains)
+        {
+            builder.AddClient(domain);
+        }
+
+        if (configuration.IsPolicyConfigured)
+        {
+            builder.AddPolicyBasedClient();
+        }
+    }
 }

@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using OpenFeature.DependencyInjection.Abstractions;
+using OpenFeature.Providers.DependencyInjection;
 
 namespace OpenFeature.Hosting.Tests;
 
@@ -10,9 +12,10 @@ public class OpenFeatureBuilderTests
         // Arrange
         var services = new ServiceCollection();
         var builder = new OpenFeatureBuilder(services);
+        var config = builder.Build().GetProviderConfiguration();
 
         // Act
-        var ex = Record.Exception(builder.Validate);
+        var ex = Record.Exception(config.Validate);
 
         // Assert
         Assert.Null(ex);
@@ -24,12 +27,11 @@ public class OpenFeatureBuilderTests
         // Arrange
         var services = new ServiceCollection();
         var builder = new OpenFeatureBuilder(services)
-        {
-            IsPolicyConfigured = true
-        };
+            .AddPolicyName(_ => { });
+        var config = builder.Build().GetProviderConfiguration();
 
         // Act
-        var ex = Record.Exception(builder.Validate);
+        var ex = Record.Exception(config.Validate);
 
         // Assert
         Assert.Null(ex);
@@ -41,13 +43,12 @@ public class OpenFeatureBuilderTests
         // Arrange
         var services = new ServiceCollection();
         var builder = new OpenFeatureBuilder(services)
-        {
-            IsPolicyConfigured = false,
-            DomainBoundProviderRegistrationCount = 2
-        };
+            .AddProvider("domain-a", (_, _) => new NoOpFeatureProvider())
+            .AddProvider("domain-b", (_, _) => new NoOpFeatureProvider());
+        var config = builder.Build().GetProviderConfiguration();
 
         // Act
-        var ex = Assert.Throws<InvalidOperationException>(builder.Validate);
+        var ex = Assert.Throws<InvalidOperationException>(config.Validate);
 
         // Assert
         Assert.Equal("Multiple providers have been registered, but no policy has been configured.", ex.Message);
@@ -59,14 +60,12 @@ public class OpenFeatureBuilderTests
         // Arrange
         var services = new ServiceCollection();
         var builder = new OpenFeatureBuilder(services)
-        {
-            IsPolicyConfigured = false,
-            DomainBoundProviderRegistrationCount = 1,
-            HasDefaultProvider = true
-        };
+            .AddProvider(_ => new NoOpFeatureProvider())
+            .AddProvider("domain-a", (_, _) => new NoOpFeatureProvider());
+        var config = builder.Build().GetProviderConfiguration();
 
         // Act
-        var ex = Assert.Throws<InvalidOperationException>(builder.Validate);
+        var ex = Assert.Throws<InvalidOperationException>(config.Validate);
 
         // Assert
         Assert.Equal("A default provider and an additional provider have been registered without a policy configuration.", ex.Message);
@@ -78,14 +77,29 @@ public class OpenFeatureBuilderTests
         // Arrange
         var services = new ServiceCollection();
         var builder = new OpenFeatureBuilder(services)
-        {
-            IsPolicyConfigured = false,
-            DomainBoundProviderRegistrationCount = 1,
-            HasDefaultProvider = false
-        };
+            .AddProvider("domain-a", (_, _) => new NoOpFeatureProvider());
+        var config = builder.Build().GetProviderConfiguration();
 
         // Act
-        var ex = Record.Exception(builder.Validate);
+        var ex = Record.Exception(config.Validate);
+
+        // Assert
+        Assert.Null(ex);
+    }
+
+    [Fact]
+    public void Validate_WithPolicyAndMultipleProviders_DoesNotThrow()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var builder = new OpenFeatureBuilder(services)
+            .AddProvider(_ => new NoOpFeatureProvider())
+            .AddProvider("domain-a", (_, _) => new NoOpFeatureProvider())
+            .AddPolicyName(_ => { });
+        var config = builder.Build().GetProviderConfiguration();
+
+        // Act
+        var ex = Record.Exception(config.Validate);
 
         // Assert
         Assert.Null(ex);

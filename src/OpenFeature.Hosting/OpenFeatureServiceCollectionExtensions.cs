@@ -13,56 +13,6 @@ namespace OpenFeature;
 /// </summary>
 public static partial class OpenFeatureServiceCollectionExtensions
 {
-    ///// <summary>
-    ///// Adds and configures OpenFeature services to the provided <see cref="IServiceCollection"/>.
-    ///// </summary>
-    ///// <param name="services">The <see cref="IServiceCollection"/> instance.</param>
-    ///// <param name="configure">A configuration action for customizing OpenFeature setup via <see cref="OpenFeatureBuilder"/></param>
-    ///// <returns>The modified <see cref="IServiceCollection"/> instance</returns>
-    ///// <exception cref="ArgumentNullException">Thrown if <paramref name="services"/> or <paramref name="configure"/> is null.</exception>
-    //public static IServiceCollection AddOpenFeature(this IServiceCollection services, Action<OpenFeatureBuilder> configure)
-    //{
-    //    Guard.ThrowIfNull(services);
-    //    Guard.ThrowIfNull(configure);
-
-    //    // Register core OpenFeature services as singletons.
-    //    services.TryAddSingleton(Api.Instance);
-    //    services.TryAddSingleton<IFeatureLifecycleManager, FeatureLifecycleManager>();
-
-    //    var builder = new OpenFeatureBuilder(services);
-    //    configure(builder);
-
-    //    builder.Services.Configure<OpenFeatureOptions>(c => { }); // Ensures IOptions<OpenFeatureOptions> is available even when no providers are configured.
-    //    builder.Services.AddHostedService<HostedFeatureLifecycleService>();
-
-    //    // If a default provider is specified without additional providers,
-    //    // return early as no extra configuration is needed.
-    //    if (builder.HasDefaultProvider && builder.DomainBoundProviderRegistrationCount == 0)
-    //    {
-    //        return services;
-    //    }
-
-    //    // Validate builder configuration to ensure consistency and required setup.
-    //    builder.Validate();
-
-    //    if (!builder.IsPolicyConfigured)
-    //    {
-    //        // Add a default name selector policy to use the first registered provider name as the default.
-    //        builder.AddPolicyName(options =>
-    //        {
-    //            options.DefaultNameSelector = provider =>
-    //            {
-    //                var options = provider.GetRequiredService<IOptions<OpenFeatureProviderOptions>>().Value;
-    //                return options.ProviderNames.FirstOrDefault();
-    //            };
-    //        });
-    //    }
-
-    //    builder.AddPolicyBasedClient();
-
-    //    return services;
-    //}
-
     /// <summary>
     /// Adds and configures OpenFeature services to the provided <see cref="IServiceCollection"/>.
     /// </summary>
@@ -75,51 +25,25 @@ public static partial class OpenFeatureServiceCollectionExtensions
         Guard.ThrowIfNull(services);
         Guard.ThrowIfNull(configure);
 
-        // Register core OpenFeature services as singletons.
+        // Regiister Hosing specific services
         services.TryAddSingleton(Api.Instance);
         services.TryAddSingleton<IFeatureLifecycleManager, FeatureLifecycleManager>();
+        services.AddHostedService<HostedFeatureLifecycleService>();
 
-        services.AddOptions<OpenFeatureOptions>();
-        services.AddOptions<OpenFeatureProviderOptions>();
-
+        // Build OpenFeature components
         var builder = new OpenFeatureBuilder(services);
         configure(builder);
 
-        var buildState = builder.Build();
-        var providerConfiguration = buildState.GetProviderConfiguration();
+        var registory = builder.Build();
+        var providerConfiguration = registory.GetProviderConfiguration();
         ConfigureClients(builder, providerConfiguration);
-
-        // Finalize components without building the container
-        var context = builder.CreateComponentContext();
-        foreach (var finalizer in builder.Components.OfType<IOpenFeatureFinalizer>())
-        {
-            finalizer.Finalize(context);
-        }
-
-        var validationContext = new OpenFeatureValidationContext(services, builder.Registry);
-        foreach (var validator in builder.Components.OfType<IOpenFeatureValidator>())
-        {
-            validator.Validate(validationContext);
-        }
-
-        if (validationContext.Errors.Count > 0)
-        {
-            throw new OpenFeatureConfigurationException(validationContext.Errors);
-        }
-
-        services.AddHostedService<HostedFeatureLifecycleService>();
 
         return services;
     }
 
     private static void ConfigureClients(OpenFeatureBuilder builder, OpenFeatureProviderConfiguration configuration)
     {
-        //configuration.Validate();
-
-        //if (configuration.HasDefaultProvider)
-        //{
-        //    builder.AddClient();
-        //}
+        configuration.Validate();
 
         builder.AddClient();
 

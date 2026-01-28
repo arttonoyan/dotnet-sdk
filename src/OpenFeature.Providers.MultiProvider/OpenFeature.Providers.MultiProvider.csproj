@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OpenFeature.Providers.DependencyInjection\OpenFeature.Providers.DependencyInjection.csproj" />
     <ProjectReference Include="..\OpenFeature\OpenFeature.csproj" />
-    <ProjectReference Include="..\OpenFeature.Hosting\OpenFeature.Hosting.csproj" />
   </ItemGroup>
 </Project>

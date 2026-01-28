@@ -3,10 +3,10 @@ using System.Runtime.CompilerServices;
 
 namespace OpenFeature.DependencyInjection.Abstractions;
 
-[DebuggerStepThrough]
 /// <summary>
 /// Guard helpers for validating arguments.
 /// </summary>
+[DebuggerStepThrough]
 internal static class Guard
 {
     /// <summary>

@@ -16,6 +16,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="OpenFeature.Providers.DependencyInjection" />
     <InternalsVisibleTo Include="OpenFeature.Hosting" />
+    <InternalsVisibleTo Include="OpenFeature.Hosting.Tests" />
   </ItemGroup>
 
 </Project>

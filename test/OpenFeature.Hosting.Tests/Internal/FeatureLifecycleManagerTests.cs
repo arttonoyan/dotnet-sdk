@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Testing;
 using OpenFeature.Constant;
+using OpenFeature.DependencyInjection.Abstractions;
 using OpenFeature.Hosting.Internal;
 using OpenFeature.Providers.DependencyInjection;
 

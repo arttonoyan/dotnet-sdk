@@ -25,7 +25,7 @@ public static partial class OpenFeatureServiceCollectionExtensions
         Guard.ThrowIfNull(services);
         Guard.ThrowIfNull(configure);
 
-        // Regiister Hosing specific services
+        // Register Hosting specific services
         services.TryAddSingleton(Api.Instance);
         services.TryAddSingleton<IFeatureLifecycleManager, FeatureLifecycleManager>();
         services.AddHostedService<HostedFeatureLifecycleService>();

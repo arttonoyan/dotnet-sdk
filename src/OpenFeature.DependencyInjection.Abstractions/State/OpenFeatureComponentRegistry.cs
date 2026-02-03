@@ -3,9 +3,9 @@ namespace OpenFeature.DependencyInjection.Abstractions;
 /// <summary>
 /// Stores component state by type for the current builder instance.
 /// </summary>
-public sealed class OpenFeatureComponentRegistory
+public sealed class OpenFeatureComponentRegistry
 {
-    private readonly Dictionary<Type, object> _state = new();
+    private readonly Dictionary<Type, object> _state = [];
 
     /// <summary>
     /// Gets existing state or creates it using the provided factory.

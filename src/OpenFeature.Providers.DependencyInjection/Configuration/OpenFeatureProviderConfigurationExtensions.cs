@@ -12,7 +12,7 @@ public static class OpenFeatureProviderConfigurationExtensions
     /// </summary>
     /// <param name="state">The component state.</param>
     /// <returns>The provider configuration.</returns>
-    public static OpenFeatureProviderConfiguration GetProviderConfiguration(this OpenFeatureComponentRegistory state)
+    public static OpenFeatureProviderConfiguration GetProviderConfiguration(this OpenFeatureComponentRegistry state)
     {
         if (state is null) throw new ArgumentNullException(nameof(state));
 

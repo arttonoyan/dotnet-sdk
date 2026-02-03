@@ -7,9 +7,9 @@ namespace OpenFeature.DependencyInjection.Abstractions;
 /// </summary>
 public sealed class OpenFeatureComponentContext
 {
-    private readonly OpenFeatureComponentRegistory _registry;
+    private readonly OpenFeatureComponentRegistry _registry;
 
-    internal OpenFeatureComponentContext(IServiceCollection services, OpenFeatureComponentRegistory registry)
+    internal OpenFeatureComponentContext(IServiceCollection services, OpenFeatureComponentRegistry registry)
     {
         Services = services;
         _registry = registry;

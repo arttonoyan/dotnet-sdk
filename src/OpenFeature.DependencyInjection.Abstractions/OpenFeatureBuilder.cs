@@ -7,7 +7,7 @@ namespace OpenFeature.DependencyInjection.Abstractions;
 /// </summary>
 public sealed class OpenFeatureBuilder
 {
-    private readonly OpenFeatureComponentRegistory _registory;
+    private readonly OpenFeatureComponentRegistry _registory;
     private readonly List<IOpenFeatureComponent> _components;
 
     /// <summary>
@@ -18,13 +18,13 @@ public sealed class OpenFeatureBuilder
     {
         if (services is null) throw new ArgumentNullException(nameof(services));
 
-        _registory = new OpenFeatureComponentRegistory();
+        _registory = new();
         _components = [];
         Services = services;
     }
 
     internal IReadOnlyList<IOpenFeatureComponent> Components => _components;
-    internal OpenFeatureComponentRegistory Registry => _registory;
+    internal OpenFeatureComponentRegistry Registry => _registory;
 
     /// <summary>
     /// Indicates whether an evaluation context has been configured.
@@ -51,7 +51,7 @@ public sealed class OpenFeatureBuilder
     /// <summary>
     /// Runs all build steps and returns the component registry state.
     /// </summary>
-    public OpenFeatureComponentRegistory Build()
+    public OpenFeatureComponentRegistry Build()
     {
         var context = CreateComponentContext();
         foreach (IOpenFeatureComponent component in _components)

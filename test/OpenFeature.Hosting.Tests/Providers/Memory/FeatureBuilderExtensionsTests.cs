@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OpenFeature.DependencyInjection.Abstractions;
 using OpenFeature.Hosting.Providers.Memory;
 using OpenFeature.Model;
 using OpenFeature.Providers.Memory;

@@ -2,10 +2,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OpenFeature.Constant;
+using OpenFeature.DependencyInjection.Abstractions;
 using OpenFeature.Hosting;
 using OpenFeature.Hosting.Internal;
 using OpenFeature.Model;
 using OpenFeature.Providers.DependencyInjection;
+using Guard = OpenFeature.DependencyInjection.Abstractions.Guard;
 
 namespace OpenFeature;
 

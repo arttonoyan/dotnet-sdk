@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using OpenFeature.DependencyInjection.Abstractions;
 
 namespace OpenFeature.Providers.DependencyInjection;
 
@@ -6,14 +7,14 @@ namespace OpenFeature.Providers.DependencyInjection;
 /// Provider-focused options for configuring OpenFeature integrations.
 /// Contains only contracts and metadata that integrations may need.
 /// </summary>
-public class OpenFeatureProviderOptions
+public class OpenFeatureProviderOptions : OpenFeatureOptions
 {
     private readonly HashSet<string> _providerNames = [];
 
     /// <summary>
     /// Determines if a default provider has been registered.
     /// </summary>
-    public bool HasDefaultProvider { get; private set; }
+    public bool HasDefaultProvider { get; internal set; }
 
     /// <summary>
     /// The <see cref="Type"/> of the configured feature provider, if any.

@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
+using OpenFeature.DependencyInjection.Abstractions;
 using OpenFeature.Hosting;
 using OpenFeature.Hosting.Internal;
 using OpenFeature.Providers.DependencyInjection;
+using Guard = OpenFeature.DependencyInjection.Abstractions.Guard;
 
 namespace OpenFeature;
 
@@ -24,41 +25,36 @@ public static partial class OpenFeatureServiceCollectionExtensions
         Guard.ThrowIfNull(services);
         Guard.ThrowIfNull(configure);
 
-        // Register core OpenFeature services as singletons.
+        // Register Hosting specific services
         services.TryAddSingleton(Api.Instance);
         services.TryAddSingleton<IFeatureLifecycleManager, FeatureLifecycleManager>();
+        services.AddHostedService<HostedFeatureLifecycleService>();
 
+        // Build OpenFeature components
         var builder = new OpenFeatureBuilder(services);
         configure(builder);
 
-        builder.Services.Configure<OpenFeatureOptions>(c => { }); // Ensures IOptions<OpenFeatureOptions> is available even when no providers are configured.
-        builder.Services.AddHostedService<HostedFeatureLifecycleService>();
-
-        // If a default provider is specified without additional providers,
-        // return early as no extra configuration is needed.
-        if (builder.HasDefaultProvider && builder.DomainBoundProviderRegistrationCount == 0)
-        {
-            return services;
-        }
-
-        // Validate builder configuration to ensure consistency and required setup.
-        builder.Validate();
-
-        if (!builder.IsPolicyConfigured)
-        {
-            // Add a default name selector policy to use the first registered provider name as the default.
-            builder.AddPolicyName(options =>
-            {
-                options.DefaultNameSelector = provider =>
-                {
-                    var options = provider.GetRequiredService<IOptions<OpenFeatureProviderOptions>>().Value;
-                    return options.ProviderNames.FirstOrDefault();
-                };
-            });
-        }
-
-        builder.AddPolicyBasedClient();
+        var registory = builder.Build();
+        var providerConfiguration = registory.GetProviderConfiguration();
+        ConfigureClients(builder, providerConfiguration);
 
         return services;
+    }
+
+    private static void ConfigureClients(OpenFeatureBuilder builder, OpenFeatureProviderConfiguration configuration)
+    {
+        configuration.Validate();
+
+        builder.AddClient();
+
+        foreach (var domain in configuration.Domains)
+        {
+            builder.AddClient(domain);
+        }
+
+        if (configuration.IsPolicyConfigured)
+        {
+            builder.AddPolicyBasedClient();
+        }
     }
 }

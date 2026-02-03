@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OpenFeature.DependencyInjection.Abstractions;
 using OpenFeature.Hosting.Internal;
 using OpenFeature.Model;
 using OpenFeature.Providers.DependencyInjection;
@@ -78,11 +79,14 @@ public partial class OpenFeatureBuilderExtensionsTests
             _ => throw new InvalidOperationException("Invalid mode.")
         };
 
+        var registory = featureBuilder.Build();
+        var config = registory.GetProviderConfiguration();
+
         // Assert
         Assert.False(_systemUnderTest.IsContextConfigured, "The context should not be configured.");
-        Assert.Equal(expectsDefaultProvider, _systemUnderTest.HasDefaultProvider);
-        Assert.False(_systemUnderTest.IsPolicyConfigured, "The policy should not be configured.");
-        Assert.Equal(expectsDomainBoundProvider, _systemUnderTest.DomainBoundProviderRegistrationCount);
+        Assert.Equal(expectsDefaultProvider, config.HasDefaultProvider);
+        Assert.False(config.IsPolicyConfigured, "The policy should not be configured.");
+        Assert.Equal(expectsDomainBoundProvider, config.Domains.Count);
         Assert.Equal(_systemUnderTest, featureBuilder);
         Assert.Single(_services, serviceDescriptor =>
             serviceDescriptor.ServiceType == typeof(FeatureProvider) &&
@@ -172,11 +176,14 @@ public partial class OpenFeatureBuilderExtensionsTests
             _ => throw new InvalidOperationException("Invalid mode.")
         };
 
+        var registory = featureBuilder.Build();
+        var config = registory.GetProviderConfiguration();
+
         // Assert
         Assert.False(_systemUnderTest.IsContextConfigured, "The context should not be configured.");
-        Assert.Equal(expectsDefaultProvider, _systemUnderTest.HasDefaultProvider);
-        Assert.False(_systemUnderTest.IsPolicyConfigured, "The policy should not be configured.");
-        Assert.Equal(expectsDomainBoundProvider, _systemUnderTest.DomainBoundProviderRegistrationCount);
+        Assert.Equal(expectsDefaultProvider, config.HasDefaultProvider);
+        Assert.False(config.IsPolicyConfigured, "The policy should not be configured.");
+        Assert.Equal(expectsDomainBoundProvider, config.Domains.Count);
         Assert.Equal(_systemUnderTest, featureBuilder);
     }
 
@@ -231,6 +238,9 @@ public partial class OpenFeatureBuilderExtensionsTests
             _ => throw new InvalidOperationException("Invalid mode.")
         };
 
+        var registory = featureBuilder.Build();
+        var config = registory.GetProviderConfiguration();
+
         var serviceProvider = _services.BuildServiceProvider();
 
         // Act
@@ -241,7 +251,7 @@ public partial class OpenFeatureBuilderExtensionsTests
             serviceProvider.GetRequiredKeyedService<FeatureProvider>(name);
 
         // Assert
-        Assert.True(featureBuilder.IsPolicyConfigured, "The policy should be configured.");
+        Assert.True(config.IsPolicyConfigured, "The policy should be configured.");
         Assert.NotNull(provider);
         Assert.IsType<NoOpFeatureProvider>(provider);
     }
